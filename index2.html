@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Milo.Cloud</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        <link rel="stylesheet" href="main.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <style>
+            /* Style to ensure cursor is only pointer on buttons */
+            #button, #nextButton, #backButton {
+                cursor: pointer;
+            }
+            body {
+                cursor: default;
+            }
+        </style>
+    </head>
+<body>
+    <div style="padding:25px;"><img src='imgs/play.png' id="button" onclick="playAudio()"></div>
+    <div style="padding:30px 0 55px 25px;"><img src='imgs/next.png' id="nextButton" onclick="playNextAudio()"></div>
+    <div style="padding:0 0 25px 25px;"><img src='imgs/prev.png' id="backButton" onclick="playPrevAudio()"></div>
+    
+    <script>
+        let audioFiles = ["mp3s/SingleThread.mp3", "mp3s/Reignition.mp3", "mp3s/Bad_One.mp3", "mp3s/Girls.mp3", "mp3s/My_Charger_Is_Broken.mp3", "mp3s/CirclesandSquares.mp3", "mp3s/Slums.mp3", "mp3s/YouAintGotTaLie.mp3", "mp3s/Planks.mp3", "mp3s/Dirt.mp3", "mp3s/What_A_Day.mp3", "mp3s/Looking_Glass.mp3", "mp3s/AscendingOrders.mp3", "mp3s/NoEscape.mp3", "mp3s/Why_The_Grass_Grows.mp3"]; // audio file names
+        let bgFiles = ["https://i.gifer.com/8V59.gif", "imgs/Surrealist1.gif", "imgs/stone.gif", "https://i.gifer.com/CdWe.gif", "https://i.gifer.com/yX7.gif", "imgs/bg1.gif", "https://i.gifer.com/KNiu.gif", "imgs/Black_Girl.gif", "https://i.gifer.com/3ubM.gif", "https://i.gifer.com/4plG.gif", "https://i.gifer.com/8u.gif", "https://i.gifer.com/3SOX.gif", "https://i.gifer.com/cJ5.gif", "https://i.gifer.com/KYaj.gif", "https://i.gifer.com/G1JO.gif"]; // img file names
+        
+        let currentAudioIndex = 0;
+        
+        let audio = new Audio();
+        audio.addEventListener("ended", function(){
+            playNextAudio();
+        });
+
+        function playAudio(){
+            if(audio.paused){
+                audio.src = audioFiles[currentAudioIndex];
+                audio.play();
+                button.src='imgs/pause.png';
+                //$("#nextButton").fadeIn(800);
+                //$("#backButton").fadeIn(800);
+            } else {
+                audio.pause();
+                button.src='imgs/play.png';
+                //$("#nextButton").fadeOut(800);
+                //$("#backButton").fadeOut(800);
+            }
+            if(audioFiles.length === 0) return alert('No audio files to play.');
+        }
+        
+        function playNextAudio(){
+            if(currentAudioIndex == 14){ currentAudioIndex = 0; }
+            else { currentAudioIndex++; }
+            audio.src = audioFiles[currentAudioIndex];
+            audio.play();
+            button.src='imgs/pause.png';
+            document.body.style.backgroundImage = "url(" + bgFiles[currentAudioIndex] + ")";
+        }
+
+        function playPrevAudio(){
+            if(currentAudioIndex == 0){ currentAudioIndex = 14; }
+            else { currentAudioIndex--; }
+            audio.src = audioFiles[currentAudioIndex];
+            audio.play();
+            button.src='imgs/pause.png';
+            document.body.style.backgroundImage = "url(" + bgFiles[currentAudioIndex] + ")";
+        }
+        
+        // Add spacebar control
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space' || event.key === ' ') {
+                // Prevent the default action (scroll page)
+                event.preventDefault();
+                playAudio();
+            }
+        });
+        
+        // Add click control for anywhere on the page
+        document.addEventListener('click', function(event) {
+            // Check if the click was on any of the control buttons
+            const isButton = event.target.id === 'button' || 
+                            event.target.id === 'nextButton' || 
+                            event.target.id === 'backButton';
+            
+            // If the click was not on a button, toggle play/pause
+            if (!isButton) {
+                playAudio();
+            }
+        });
+    </script>
+</body>
+</html>

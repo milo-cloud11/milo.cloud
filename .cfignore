@@ -1,0 +1,12 @@
+# Exclude from Cloudflare upload (in addition to .gitignore)
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+# Never upload git internals
+.git
+.gitignore
+
+# Source assets already gitignored — defensive double-cover
+_source-assets
+
+# Docs don't need to be served
+README.md

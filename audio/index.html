@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Audio API flt:peaking BiquadFilter()</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --background: #2d3436;
+        }
+        html { 
+  background: url("https://i.gifer.com/8V59.gif") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+        body {
+            
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .band {
+            text-align: center;
+            perspective: 1000px;
+        }
+
+        .fader-container {
+            position: relative;
+            height: 200px;
+            margin: 15px 0;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #636e72;
+            border-radius: 4px;
+            outline: none;
+            transform: rotate(-90deg);
+            position: absolute;
+            bottom: 96px;
+            left: -96px;
+            width: 200px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .frequency-label {
+            font-size: 12px;
+            margin-top: 10px;
+            color: #dfe6e9;
+        }
+
+        .gain-value {
+            font-size: 14px;
+            margin: 5px 0;
+            color: var(--primary-color);
+        }
+
+        #audioUpload {
+            margin: 20px;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" id="audioUpload" accept="audio/*">
+    <div class="container" id="bandsContainer"></div>
+    <audio id="audioElement" controls></audio>
+
+    <script>
+        const frequencies = [30, 80, 200, 500, 1200, 2000, 5000, 8000, 12500, 17500];
+        let audioContext = null;
+        let sourceNode = null;
+        const filters = [];
+
+        // Create EQ bands
+        const bandsContainer = document.getElementById('bandsContainer');
+        frequencies.forEach((freq, index) => {
+            const bandDiv = document.createElement('div');
+            bandDiv.className = 'band';
+            
+            bandDiv.innerHTML = `
+                <div class="fader-container">
+                    <input type="range" 
+                           class="gain" 
+                           min="-24" 
+                           max="24" 
+                           value="0"
+                           data-index="${index}">
+                </div>
+                <div class="gain-value">0 dB</div>
+                <div class="frequency-label">${freq < 1000 ? freq + 'Hz' : (freq/1000).toFixed(1) + 'kHz'}</div>
+            `;
+            
+            bandsContainer.appendChild(bandDiv);
+        });
+
+        // File upload and audio setup
+        document.getElementById('audioUpload').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            const url = URL.createObjectURL(file);
+            const audioElement = document.getElementById('audioElement');
+            audioElement.src = url;
+
+            // Initialize audio context on first load
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create filters
+                frequencies.forEach((freq, index) => {
+                    const filter = audioContext.createBiquadFilter();
+                    filter.type = 'peaking';
+                    filter.frequency.value = freq;
+                    filter.gain.value = 0;
+                    filter.Q.value = 1;
+                    filters.push(filter);
+                });
+
+                // Connect filter chain
+                for (let i = 0; i < filters.length - 1; i++) {
+                    filters[i].connect(filters[i + 1]);
+                }
+                filters[filters.length - 1].connect(audioContext.destination);
+            }
+
+            // Create/reconnect media element source
+            if (sourceNode) sourceNode.disconnect();
+            sourceNode = audioContext.createMediaElementSource(audioElement);
+            sourceNode.connect(filters[0]);
+        });
+
+        // Animated slider handling
+        document.querySelectorAll('.gain').forEach(slider => {
+            slider.addEventListener('input', function(e) {
+                const index = parseInt(this.dataset.index);
+                const value = parseFloat(this.value);
+                const display = this.parentElement.nextElementSibling;
+
+                // Animate slider thumb
+                anime({
+                    targets: this,
+                    value: value,
+                    round: 1,
+                    duration: 300,
+                    easing: 'easeOutElastic(1, .5)',
+                    update: () => {
+                        filters[index].gain.value = parseFloat(this.value);
+                        display.textContent = `${Math.round(this.value)} dB`;
+                    }
+                });
+
+                // Add visual feedback
+                anime({
+                    targets: display,
+                    scale: [1, 1.2, 1],
+                    duration: 300,
+                    easing: 'easeOutExpo'
+                });
+            });
+        });
+
+        // Initial animations
+        anime({
+            targets: '.band',
+            opacity: [0, 1],
+            translateY: [50, 0],
+            delay: anime.stagger(50),
+            duration: 800,
+            easing: 'easeOutExpo'
+        });
+    </script>
+</body>
+</html>

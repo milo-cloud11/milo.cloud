@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Milo.Supply</title>
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        <link rel="stylesheet" href="main.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    </head>
+<body>
+    <div style="padding:25px;"><img src='imgs/play.png' id="button" onclick="playAudio()"></div>
+    <div style="padding:0 0 25px 25px;"><img src='imgs/next_sk.png' id="nextButton" onclick="playNextAudio()"></div>
+    <div style="padding:0 0 25px 25px;"><img src='imgs/prev_sk.png' id="prevButton" onclick="playPrevAudio()"></div>
+    
+
+    <script>
+        let audioFiles = ["mp3s/SingleThread.mp3", "mp3s/Bad_One.mp3", "mp3s/Girls.mp3", "mp3s/My_Charger_Is_Broken.mp3", "mp3s/Planks.mp3", "mp3s/What_A_Day.mp3", "mp3s/Looking_Glass.mp3", "mp3s/MiloMakesHisCollege.mp3"]; // replace with your audio file names
+        let bgFiles = ["imgs/7TW.gif", "imgs/gif1c.gif", "imgs/gif1.gif", "imgs/gif1b.gif", "https://i.gifer.com/DamU.gif", "imgs/7TW.gif", "imgs/7TW.gif", "imgs/7TW.gif"]; // replace with your audio file names
+
+        let currentAudioIndex = 0;
+
+        let audio = new Audio();
+
+        audio.addEventListener("ended", function(){
+            
+                playNextAudio();
+           
+        });
+
+        function playAudio(){
+            if(audio.paused){
+                audio.src = audioFiles[currentAudioIndex];
+                audio.play();
+                button.src='imgs/pause.png';
+                $("#nextButton").fadeIn(800);
+                $("#prevButton").fadeIn(800);
+            } else {
+                audio.pause();
+                button.src='imgs/play.png';
+                $("#nextButton").fadeOut(800);
+                $("#prevButton").fadeOut(800);
+            }
+            if(audioFiles.length === 0) return alert('No audio files to play.');
+            
+        }
+
+        function playNextAudio(){
+            if(currentAudioIndex == 7){ currentAudioIndex = 0; }
+            else { currentAudioIndex++; }
+            audio.src = audioFiles[currentAudioIndex];
+            audio.play();
+            document.body.style.backgroundImage = "url(" + bgFiles[currentAudioIndex] + ")";
+        }
+        function playPrevAudio(){
+            if(currentAudioIndex == 0){ currentAudioIndex = 7; }
+            else { currentAudioIndex--; }
+            audio.src = audioFiles[currentAudioIndex];
+            audio.play();
+            document.body.style.backgroundImage = "url(" + bgFiles[currentAudioIndex] + ")";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Milo.Cloud - Design</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Garuda, Verdana, Tahoma, sans-serif;
+      font-weight: 100;
+      font-size: 20px;
+      color: #444;
+      background: #f8f8f8;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: url('https://milo.cloud/design/imgs/3Elp2.gif') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+	.logo {
+		width: 150px;
+		height: auto;
+	}
+
+    .container {
+      max-width: 550px;
+      padding: 100px 0 0 100px;
+      margin-bottom: 100px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 0 0 50px 2px;
+    }
+
+    .header-name {
+      font-size: 14px;
+    }
+
+    .header-contact {
+      font-size: 14px;
+    }
+
+    .header-contact a {
+      text-decoration: none;
+      color: #444;
+      transition: color 0.3s ease;
+    }
+
+    .header-contact a:hover {
+      color: #000;
+    }
+
+    .header-subtitle {
+      font-size: 10px;
+      margin-bottom: 19px;
+    }
+
+    .portfolio-item {
+      margin-top: 90px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .thumbnail {
+      width: 100%;
+	  max-width: 550px;
+      height: auto;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: block;
+    }
+
+    .thumbnail:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .item-caption {
+      padding: 10px 0 0 2px;
+      font-weight: 200;
+      color: #797878;
+      font-size: 13px;
+    }
+
+    /* Lightbox Styles */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: background-color 0.4s ease, opacity 0.4s ease;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .lightbox.active {
+      background-color: rgba(0, 0, 0, 0.9);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .lightbox-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      padding: 40px 20px;
+    }
+
+    .lightbox-content {
+      width: auto;
+      max-width: 1200px;
+	  padding-top: 60px;
+      height: auto;
+      transform: scale(0.9);
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .lightbox.active .lightbox-content {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .close-lightbox {
+      position: fixed;
+      top: 20px;
+      right: 50px;
+      color: #fff;
+      font-size: 30px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 1001;
+      font-family: Arial, sans-serif;
+    }
+
+    .close-lightbox:hover {
+      opacity: 1;
+      transform: rotate(90deg);
+    }
+
+    /* Animation delays for portfolio items */
+    .portfolio-item:nth-child(1) { animation-delay: 0.1s; }
+    .portfolio-item:nth-child(2) { animation-delay: 0.2s; }
+    .portfolio-item:nth-child(3) { animation-delay: 0.3s; }
+    .portfolio-item:nth-child(4) { animation-delay: 0.4s; }
+    .portfolio-item:nth-child(5) { animation-delay: 0.5s; }
+    .portfolio-item:nth-child(6) { animation-delay: 0.6s; }
+    .portfolio-item:nth-child(7) { animation-delay: 0.7s; }
+    .portfolio-item:nth-child(8) { animation-delay: 0.8s; }
+
+    /* A-Frame Scene Styles */
+    .a-scene-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    /* Hide A-Frame VR button as we're using this as background */
+    .a-enter-vr {
+      display: none !important;
+    }
+    
+    @media only screen and (max-width: 1400px) {
+      .container {
+        max-width: 80%;
+        margin: 0 auto;
+        padding: 100px 0 0 0;
+      }
+      
+      .header {
+        padding-bottom: 0;
+      }
+      
+      .lightbox-content {
+        max-width: 95%;
+      }
+      
+      .close-lightbox {
+        right: 20px; /* Adjust close button position on mobile */
+      }
+    }
+  </style>
+</head>
+ 
+<body>
+<!-- A-Frame Scene as Background -->
+  <div class="a-scene-container">
+    <a-scene embedded vr-mode-ui="enabled: false" renderer="antialias: true; alpha: true">
+      <!-- Environment -->
+      <a-sky color="#000000" opacity="0"></a-sky>
+      
+      <!-- Ambient light -->
+      <a-light type="ambient" color="#888888"></a-light>
+      
+      <!-- Directional light -->
+      <a-light type="directional" position="1 1 1" intensity="0.5" color="#ffffff"></a-light>
+      
+      <!-- Floating geometric shapes -->
+      <a-entity id="shapes-container" position="0 0 -5">
+        <a-box position="-3 0 -2" rotation="0 45 0" width="1" height="1" depth="1" color="#4CC3D9" 
+               animation="property: rotation; to: 360 405 0; loop: true; dur: 15000; easing: linear"></a-box>
+        
+        <a-sphere position="0 1 -3" radius="0.8" color="#EF2D5E" 
+                  animation="property: position; to: 0 2 -3; dir: alternate; dur: 5000; loop: true; easing: easeInOutQuad"></a-sphere>
+        
+        <a-cylinder position="3 0.5 -2" radius="0.6" height="1.5" color="#FFC65D" 
+                    animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"></a-cylinder>
+        
+        <a-torus position="-2 2 -4" color="#7BC8A4" radius="1" radius-tubular="0.1" 
+                 animation="property: rotation; to: 360 360 0; loop: true; dur: 10000; easing: linear"></a-torus>
+        
+        <a-cone position="2 2 -4" radius-bottom="1" radius-top="0" height="1.5" color="#F16745" 
+                animation="property: position; to: 2 3 -4; dir: alternate; dur: 4000; loop: true; easing: easeInOutQuad"></a-cone>
+      </a-entity>
+      
+      <!-- Camera with no controls since we're using this as a background -->
+      <a-camera look-controls="enabled: false" wasd-controls="enabled: false"></a-camera>
+    </a-scene>
+  </div>
+  
+  
+  <div class="container">
+    <div class="header">
+      <div class="header-name"><img class="logo" src="https://milo.cloud/design/imgs/logo1.png"></div>
+      <div class="header-subtitle">Web Dev. Digital Design. Art Direction.</div>
+	  <span class="header-contact"><a href="sms:9096855317">909.685.5317 txt</a></span>
+    </div>
+
+    <div class="portfolio-item">
+      <img src="https://milo.cloud/design/imgs/ma_thumb.jpg" class="thumbnail" alt="Mrs Allen Design" data-full="https://milo.cloud/design/imgs/mrsallen_full.jpg">
+      <div class="item-caption">Full Website, Logo Design</div>
+    </div>
+
+    <div class="portfolio-item">
+      <img src="https://milo.cloud/design/imgs/nc_thumb.jpg" class="thumbnail" alt="Nurse Courtney Design" data-full="https://milo.cloud/design/imgs/nursecourtney_full.jpg">
+      <div class="item-caption">Full Website, Logo Design</div>
+    </div>
+
+    <div class="portfolio-item">
+      <img src="https://milo.cloud/design/imgs/aac_thumb.jpg" class="thumbnail" alt="AAC Design" data-full="https://milo.cloud/design/imgs/aac_full.jpg">
+      <div class="item-caption">Logo Design, Business Card Design</div>
+    </div>
+
+    <div class="portfolio-item">
+      <img src="https://milo.cloud/design/imgs/bomani_thumb.jpg" class="thumbnail" alt="Bomani Design" data-full="https://milo.cloud/design/imgs/bomani_full.jpg">
+      <div class="item-caption">Logo Design</div>
+    </div>
+
+    <div class="portfolio-item">
+      <img src="https://milo.cloud/design/imgs/axtn_thumb.jpg" class="thumbnail" alt="AXTN Design" data-full="https://milo.cloud/design/imgs/axtn_full.jpg">
+      <div class="item-caption">Logo Design</div>
+    </div>
+
+    <div class="portfolio-item">
+      <img src="https://milo.cloud/design/imgs/akari_thumb.jpg" class="thumbnail" alt="Akari Product Design" data-full="https://milo.cloud/design/imgs/akari_full.jpg">
+      <div class="item-caption">Product Design, Packaging</div>
+    </div>
+
+    <div class="portfolio-item">
+      <img src="https://milo.cloud/design/imgs/Tenkara_thumb.png" class="thumbnail" alt="Tenkara Illustration" data-full="https://milo.cloud/design/imgs/Tenkara_full.png">
+      <div class="item-caption">Digital Art, Illustration</div>
+    </div>
+
+    <div class="portfolio-item">
+      <img src="https://milo.cloud/design/imgs/Girl_thumb.png" class="thumbnail" alt="Girl Illustration" data-full="https://milo.cloud/design/imgs/Girl_full.png">
+      <div class="item-caption">Digital Art, Illustration</div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox">
+    <div class="lightbox-container">
+      <img class="lightbox-content" src="" alt="Full size image">
+      <div class="close-lightbox">&#215;</div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const lightbox = document.querySelector('.lightbox');
+      const lightboxContent = document.querySelector('.lightbox-content');
+      const closeLightbox = document.querySelector('.close-lightbox');
+      const thumbnails = document.querySelectorAll('.thumbnail');
+      
+      // Open lightbox on thumbnail click
+      thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+          const fullImageSrc = this.getAttribute('data-full');
+          const altText = this.getAttribute('alt');
+          
+          // Reset scroll position to top
+          window.scrollTo(0, 0);
+          
+          // Set lightbox content
+          lightboxContent.setAttribute('src', fullImageSrc);
+          lightboxContent.setAttribute('alt', altText);
+          
+          // Small delay to allow image to load before animation
+          setTimeout(() => {
+            lightbox.classList.add('active');
+            // Ensure lightbox container is scrolled to top
+            lightbox.scrollTop = 0;
+          }, 50);
+        });
+      });
+      
+      // Close lightbox on click
+      closeLightbox.addEventListener('click', function() {
+        lightbox.classList.remove('active');
+        // Reset src after transition completes to prevent image from being visible during next opening
+        setTimeout(() => {
+          lightboxContent.setAttribute('src', '');
+        }, 400);
+      });
+      
+      // Close lightbox when clicking outside the image
+      lightbox.addEventListener('click', function(e) {
+        // Make sure we're only closing if the actual lightbox container is clicked
+        // and not any of its children (including the image)
+        if (e.target === this.querySelector('.lightbox-container')) {
+          lightbox.classList.remove('active');
+          // Reset src after transition completes
+          setTimeout(() => {
+            lightboxContent.setAttribute('src', '');
+          }, 400);
+        }
+      });
+      
+      // Close lightbox with ESC key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+          lightbox.classList.remove('active');
+          // Reset src after transition completes
+          setTimeout(() => {
+            lightboxContent.setAttribute('src', '');
+          }, 400);
+        }
+      });
+
+      // Add staggered animation for portfolio items
+      const portfolioItems = document.querySelectorAll('.portfolio-item');
+      portfolioItems.forEach((item, index) => {
+        item.style.animationDelay = `${0.1 + (index * 0.1)}s`;
+      });
+    });
+  </script>
+</body>
+</html>
