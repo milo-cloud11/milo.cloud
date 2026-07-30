@@ -250,29 +250,6 @@
  
 <body>
 <!-- A-Frame Scene as Background -->
-<div class="a-scene-container">
-    <a-scene embedded vr-mode-ui="enabled: false" renderer="antialias: true; alpha: true" device-orientation-permission-ui="enabled: false">
-      <!-- Environment -->
-      <a-sky color="#000000" opacity="0"></a-sky>
-      
-      <!-- Ambient light -->
-      <a-light type="ambient" color="#888888"></a-light>
-      
-      <!-- Directional light -->
-      <a-light type="directional" position="1 1 1" intensity="0.5" color="#ffffff"></a-light>
-      
-      <!-- Floating geometric shapes -->
-      
-      <a-assets>
-        <a-asset-item id="myModel" src="https://milo.cloud/design/3d/heart.gltf"></a-asset-item>
-      </a-assets>
-      <a-entity gltf-model="#myModel" scale="6 6 6"  position="0 -5 -20" animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear"></a-entity>
-      <!-- Camera with no controls since we're using this as a background -->
-      <a-camera look-controls="enabled: false" wasd-controls="enabled: false"></a-camera>
-    </a-scene>
-  </div>
-  
-  
   <div class="container">
     <div class="header">
       <div class="logo2">MILO <sup class="are">&reg;</sup></div>
