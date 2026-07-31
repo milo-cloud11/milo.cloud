@@ -6,11 +6,29 @@
         <link rel="icon" type="image/x-icon" href="favicon.ico">
         <link rel="stylesheet" href="main.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <style>
+            /* Self-hosted display font for the control labels */
+            @font-face {
+                font-family: 'Black Metal';
+                src: url('fonts/Black-Metal.woff2') format('woff2');
+                font-weight: normal;
+                font-style: normal;
+                font-display: swap;
+            }
+            #button, #nextButton, #backButton {
+                font-family: 'Black Metal', cursive;
+                font-size: 42px;
+                color: #f5f5f5;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                user-select: none;
+                opacity: 0.7;
+            }
+        </style>
     </head>
 <body>
-    <div style="padding:25px;"><img src='imgs/play.png' id="button" onclick="playAudio()"></div>
-    <div style="padding:30px 0 55px 25px;"><img src='imgs/next.png' id="nextButton" onclick="playNextAudio()"></div>
-    <div style="padding:0 0 25px 25px;"><img src='imgs/prev.png' id="backButton" onclick="playPrevAudio()"></div>
+    <div style="padding:25px;"><span id="button" onclick="playAudio()" style="cursor:pointer;">Play</span></div>
+    <div style="padding:30px 0 55px 25px;"><span id="nextButton" onclick="playNextAudio()" style="cursor:pointer;">Nxt</span></div>
+    <div style="padding:0 0 25px 25px;"><span id="backButton" onclick="playPrevAudio()" style="cursor:pointer;">Prv</span></div>
     
 
     <script>
@@ -18,6 +36,7 @@
         let bgFiles = ["https://i.gifer.com/8V59.gif", "https://i.gifer.com/6xL.gif", "imgs/stone.gif", "https://i.gifer.com/Pn4.gif", "https://i.gifer.com/yX7.gif", "imgs/bg1.gif", "https://i.gifer.com/YqHO.gif", "https://i.gifer.com/O2A7.gif", "https://i.gifer.com/3ubM.gif", "https://i.gifer.com/4plG.gif", "https://i.gifer.com/8u.gif", "https://i.gifer.com/3SOX.gif", "https://i.gifer.com/cJ5.gif", "https://i.gifer.com/KYaj.gif", "https://i.gifer.com/G1JO.gif"]; // img file names
 
         let currentAudioIndex = 0;
+        let loadedIndex = -1; // which track is currently loaded into the audio element
 
         let audio = new Audio();
 
@@ -29,35 +48,42 @@
 
         function playAudio(){
             if(audio.paused){
-                audio.src = audioFiles[currentAudioIndex];
+                // Only load the file when the track actually changes;
+                // otherwise resume from the paused position.
+                if(loadedIndex !== currentAudioIndex){
+                    audio.src = audioFiles[currentAudioIndex];
+                    loadedIndex = currentAudioIndex;
+                }
                 audio.play();
-                button.src='imgs/pause.png';
+                button.textContent='Pause';
                 //$("#nextButton").fadeIn(800);
                 //$("#backButton").fadeIn(800);
             } else {
                 audio.pause();
-                button.src='imgs/play.png';
+                button.textContent='Play';
                 //$("#nextButton").fadeOut(800);
                 //$("#backButton").fadeOut(800);
             }
             if(audioFiles.length === 0) return alert('No audio files to play.');
-            
+
         }
 
         function playNextAudio(){
             if(currentAudioIndex == 14){ currentAudioIndex = 0; }
             else { currentAudioIndex++; }
             audio.src = audioFiles[currentAudioIndex];
+            loadedIndex = currentAudioIndex;
             audio.play();
-            button.src='imgs/pause.png';
+            button.textContent='Pause';
             document.body.style.backgroundImage = "url(" + bgFiles[currentAudioIndex] + ")";
         }
         function playPrevAudio(){
             if(currentAudioIndex == 0){ currentAudioIndex = 14; }
             else { currentAudioIndex--; }
             audio.src = audioFiles[currentAudioIndex];
+            loadedIndex = currentAudioIndex;
             audio.play();
-            button.src='imgs/pause.png';
+            button.textContent='Pause';
             document.body.style.backgroundImage = "url(" + bgFiles[currentAudioIndex] + ")";
         }
 
