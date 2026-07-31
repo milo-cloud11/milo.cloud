@@ -162,6 +162,27 @@
       opacity: 1;
     }
 
+    .lightbox-video {
+      display: block;
+      width: min(1200px, 92vw, 160vh);
+      aspect-ratio: 16 / 9;
+      height: auto;
+      margin-top: 60px;
+      border: none;
+      /* iframe keeps its box even after src is cleared; without this it swallows
+         scroll/pointer events over its area once the lightbox closes */
+      pointer-events: none;
+      transform: scale(0.9);
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .lightbox.active .lightbox-video {
+      transform: scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .close-lightbox {
       position: fixed;
       top: 20px;
@@ -258,6 +279,20 @@
     </div>
 
     <div class="portfolio-item">
+      <a href="https://v01dnthemachine.com/sui-connect-modal" target="_blank" rel="noopener noreferrer" style="display:block;">
+        <img src="imgs/V01D-Connect-Modal_thumb.png" class="thumbnail" alt="V01D Connect Modal" data-external="true">
+      </a>
+      <div class="item-caption">Web3 Wallet Connect Modal, Sui Blockchain, React, TypeScript</div>
+    </div>
+
+    <div class="portfolio-item">
+      <a href="https://magiceyeball.xyz" target="_blank" rel="noopener noreferrer" style="display:block;">
+        <img src="imgs/magiceyeball_thumb.jpg" class="thumbnail" alt="Magic Eye Ball dApp" data-external="true">
+      </a>
+      <div class="item-caption">Sui Nft based Magic 8 Ball dApp, Minting dApp, Web3, NextJs</div>
+    </div>
+
+    <div class="portfolio-item">
       <img src="imgs/dl_thumb.jpg" class="thumbnail" alt="Mrs Allen Design" data-full="imgs/dl_full.jpg">
       <div class="item-caption">Full Website, Logo Design, Graphic Design</div>
     </div>
@@ -293,13 +328,13 @@
     </div>
 
     <div class="portfolio-item">
-      <img src="imgs/Tenkara_thumb.png" class="thumbnail" alt="Tenkara Illustration" data-full="imgs/Tenkara_full.png">
-      <div class="item-caption">Digital Art, Illustration</div>
+      <img src="imgs/hollywood_thumb.jpg" class="thumbnail" alt="Hollywood Package Design" data-full="imgs/hollywood_full.jpg">
+      <div class="item-caption">Package Design, Logo Design</div>
     </div>
 
     <div class="portfolio-item" style="padding-bottom: 150px;">
-      <img src="imgs/Girl_thumb.png" class="thumbnail" alt="Girl Illustration" data-full="imgs/Girl_full.png">
-      <div class="item-caption">Digital Art, Illustration</div>
+      <img src="imgs/aivid_thumb.jpg" class="thumbnail" alt="AI Video Examples" data-video="1214469804">
+      <div class="item-caption">AI Video Examples</div>
     </div>
   </div>
 
@@ -307,6 +342,7 @@
   <div class="lightbox">
     <div class="lightbox-container">
       <img class="lightbox-content" src="" alt="Full size image">
+      <iframe class="lightbox-video" src="" style="display:none;" title="Video player" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
       <div class="close-lightbox">&#215;</div>
     </div>
   </div>
@@ -315,23 +351,40 @@
     document.addEventListener('DOMContentLoaded', function() {
       const lightbox = document.querySelector('.lightbox');
       const lightboxContent = document.querySelector('.lightbox-content');
+      const lightboxVideo = document.querySelector('.lightbox-video');
       const closeLightbox = document.querySelector('.close-lightbox');
       const thumbnails = document.querySelectorAll('.thumbnail');
-      
+
       // Open lightbox on thumbnail click
       thumbnails.forEach(thumbnail => {
         thumbnail.addEventListener('click', function() {
-          const fullImageSrc = this.getAttribute('data-full');
-          const altText = this.getAttribute('alt');
-          
+          // External link cards: let the anchor handle navigation, skip lightbox
+          if (this.dataset.external === 'true') return;
+
           // Reset scroll position to top
           window.scrollTo(0, 0);
-          
-          // Set lightbox content
-          lightboxContent.setAttribute('src', fullImageSrc);
-          lightboxContent.setAttribute('alt', altText);
-          
-          // Small delay to allow image to load before animation
+
+          const videoId = this.dataset.video;
+          if (videoId) {
+            // Video card: show Vimeo iframe, hide image
+            lightboxContent.style.display = 'none';
+            lightboxContent.setAttribute('src', '');
+            lightboxVideo.style.display = '';
+            lightboxVideo.setAttribute('src', 'https://player.vimeo.com/video/' + videoId + '?autoplay=1');
+          } else {
+            // Image card: show image, stop & hide any playing video
+            lightboxVideo.style.display = 'none';
+            lightboxVideo.setAttribute('src', '');
+            lightboxContent.style.display = '';
+            lightboxContent.setAttribute('src', this.getAttribute('data-full'));
+            lightboxContent.setAttribute('alt', this.getAttribute('alt'));
+          }
+
+          // Restore the lightbox (it's set to display:none after closing) so the
+          // fade-in transition can run
+          lightbox.style.display = 'block';
+
+          // Small delay to allow content to load before animation
           setTimeout(() => {
             lightbox.classList.add('active');
             // Ensure lightbox container is scrolled to top
@@ -340,36 +393,34 @@
         });
       });
       
-      // Close lightbox on click
-      closeLightbox.addEventListener('click', function() {
+      // Close lightbox: fade out, then tear down content and fully remove the
+      // lightbox from the document so nothing inside it (iframe, container)
+      // can capture pointer/wheel events after closing.
+      function closeLb() {
         lightbox.classList.remove('active');
-        // Reset src after transition completes to prevent image from being visible during next opening
         setTimeout(() => {
           lightboxContent.setAttribute('src', '');
+          lightboxVideo.setAttribute('src', '');
+          lightboxVideo.style.display = 'none';
+          lightbox.style.display = 'none';
         }, 400);
-      });
-      
-      // Close lightbox when clicking outside the image
+      }
+
+      // Close lightbox on click
+      closeLightbox.addEventListener('click', closeLb);
+
+      // Close lightbox when clicking outside the content
       lightbox.addEventListener('click', function(e) {
-        // Make sure we're only closing if the actual lightbox container is clicked
-        // and not any of its children (including the image)
+        // Only close if the click lands on the container itself, not its children
         if (e.target === this.querySelector('.lightbox-container')) {
-          lightbox.classList.remove('active');
-          // Reset src after transition completes
-          setTimeout(() => {
-            lightboxContent.setAttribute('src', '');
-          }, 400);
+          closeLb();
         }
       });
-      
+
       // Close lightbox with ESC key
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-          lightbox.classList.remove('active');
-          // Reset src after transition completes
-          setTimeout(() => {
-            lightboxContent.setAttribute('src', '');
-          }, 400);
+          closeLb();
         }
       });
 
