@@ -60,6 +60,27 @@
             button.src='imgs/pause.png';
             document.body.style.backgroundImage = "url(" + bgFiles[currentAudioIndex] + ")";
         }
+
+        // Toggle play/pause when clicking anywhere on the page,
+        // except on the play, next, or prev buttons (they handle their own clicks).
+        document.addEventListener("click", function(e){
+            if(e.target.closest('#button')) return;
+            if(e.target.closest('#nextButton')) return;
+            if(e.target.closest('#backButton')) return;
+            playAudio();
+        });
+
+        // Keyboard shortcuts: Space = play/pause, Left/Right arrows = prev/next.
+        document.addEventListener("keydown", function(e){
+            if(e.key === " " || e.code === "Space"){
+                e.preventDefault(); // stop the page from scrolling on spacebar
+                playAudio();
+            } else if(e.key === "ArrowLeft"){
+                playPrevAudio();
+            } else if(e.key === "ArrowRight"){
+                playNextAudio();
+            }
+        });
     </script>
 </body>
 </html>
