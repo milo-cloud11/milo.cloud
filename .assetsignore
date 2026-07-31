@@ -1,0 +1,4 @@
+# Keep git internals out of the asset upload.
+# The .git pack file exceeds Cloudflare's 25 MiB per-file limit,
+# so excluding it lets the deploy succeed without touching anything else.
+.git
