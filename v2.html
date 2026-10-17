@@ -268,8 +268,8 @@
 
         #hint {
             position: fixed; z-index: 10;
-            left: 50%; bottom: 72px;
-            transform: translateX(-50%);
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
             font-family: var(--mono);
             font-size: 10px;
             letter-spacing: .26em;
@@ -302,31 +302,17 @@
 
         #veil {
             position: fixed; inset: 0; z-index: 50;
-            background: var(--void);
-            display: flex; flex-direction: column;
+            background: var(--void) url("https://i.gifer.com/3RXF.gif") center / cover no-repeat;
+            display: flex;
             align-items: center; justify-content: center;
-            gap: 22px;
         }
 
         .veil-mark {
             font-family: var(--display);
             font-size: clamp(44px, 10vw, 116px);
             text-transform: uppercase;
-            color: var(--ink);
+            color: #000;
             line-height: 1;
-        }
-
-        .veil-line {
-            width: min(42vw, 320px); height: 1px;
-            background: var(--blood);
-        }
-
-        .veil-sub {
-            font-family: var(--mono);
-            font-size: 10px;
-            letter-spacing: .4em;
-            text-transform: uppercase;
-            color: var(--ink-faint);
         }
 
         /* elements revealed by the intro timeline */
@@ -387,7 +373,7 @@
         </div>
     </footer>
 
-    <div id="hint" class="fx">SPACE — PLAY&nbsp;&nbsp;·&nbsp;&nbsp;◄ ► — TRACK&nbsp;&nbsp;·&nbsp;&nbsp;CLICK — ANYWHERE</div>
+    <div id="hint" class="fx">SPACE - PLAY&nbsp;&nbsp;.&nbsp;&nbsp;ARROWS &lt;&gt; - SKIP</div>
 
     <div id="seek" aria-label="Seek">
         <div id="progress" aria-hidden="true">
@@ -397,8 +383,6 @@
 
     <div id="veil">
         <div class="veil-mark" id="veilMark">Milo.Cloud</div>
-        <div class="veil-line" id="veilLine"></div>
-        <div class="veil-sub" id="veilSub">XV transmissions — press play</div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
@@ -848,16 +832,10 @@
                 return;
             }
 
-            const mark = SplitText.create("#veilMark", { type: "chars" });
-
             const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-            tl.fromTo(mark.chars,
-                    { autoAlpha: 0 },
-                    { autoAlpha: 1, duration: .05, repeat: 3, yoyo: true, ease: "none", stagger: { each: .07 } })
-                .set(mark.chars, { autoAlpha: 1 })
-                .fromTo("#veilLine", { scaleX: 0 }, { scaleX: 1, duration: .85, ease: "power3.inOut" }, "<+=.15")
-                .fromTo("#veilSub", { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .5 }, "-=.45")
-                .to("#veil", { yPercent: -100, duration: 1, ease: "power4.inOut", delay: .45 })
+            tl.fromTo("#veilMark", { autoAlpha: 0 }, { autoAlpha: 1, duration: 2.2, ease: "power2.inOut" });
+
+            tl.to("#veil", { yPercent: -100, duration: 1, ease: "power4.inOut", delay: .9 })
                 .set("#veil", { display: "none" })
                 // UI reveals, overlapping the veil lift
                 .set("#controls", { autoAlpha: 1 }, "-=.55");   // container first, so the buttons' visibility:inherit resolves to visible
@@ -890,15 +868,13 @@
         prepInitialStates();
         warmTrack(0);
         let booted = false;
-        setTimeout(() => {
-            if (!booted) $("#veilSub").textContent = "— loading transmission —";
-        }, 1200);
         Promise.race([
             Promise.all([
                 document.fonts.load('16px "Black Metal"'),
                 document.fonts.load('16px "Fragment Mono"'),
                 fetch(tracks[0].file, { cache: "force-cache" }).catch(() => {}),
                 loadBg(tracks[0].bg),
+                loadBg("https://i.gifer.com/3RXF.gif"),
             ]),
             new Promise((res) => setTimeout(res, 10000)),
         ]).then(() => {
