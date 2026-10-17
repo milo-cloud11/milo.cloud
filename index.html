@@ -558,20 +558,23 @@
             gsap.to([titleEl, plainEl], { opacity: playing ? 1 : .45, duration: .5, ease: "power2.out" });
         }
 
-        function togglePlay() {
-            if (audio.paused) {
-                if (!analyser) initAnalyser();
-                if (loadedIndex !== currentAudioIndex) {
-                    audio.src = tracks[currentAudioIndex].file;
-                    loadedIndex = currentAudioIndex;
-                }
-                audio.play().catch(() => {});
-                setPlayingUI(true);
-                warmTrack(currentAudioIndex + 1);
-            } else {
-                audio.pause();
-                setPlayingUI(false);
+        function startPlayback(fadeIn = false) {
+            if (canAnalyse && !analyser) initAnalyser();
+            if (eqCtx && eqCtx.state === "suspended") eqCtx.resume().catch(() => {});
+            if (loadedIndex !== currentAudioIndex) {
+                audio.src = tracks[currentAudioIndex].file;
+                loadedIndex = currentAudioIndex;
             }
+            audio.play().then(() => {
+                if (fadeIn) gsap.to(audio, { volume: 1, duration: .6, ease: "sine.out", overwrite: "auto" });
+            }).catch(() => { audio.volume = 1; setPlayingUI(false); });
+            setPlayingUI(true);
+            warmTrack(currentAudioIndex + 1);
+        }
+
+        function togglePlay() {
+            if (audio.paused) startPlayback();
+            else audio.pause();   // the 'pause' listener below syncs the UI
         }
 
         /* ================= track switching ================= */
@@ -584,29 +587,30 @@
             switchTl = gsap.timeline();
 
             if (!audio.paused) {
-                switchTl.to(audio, { volume: 0, duration: .15, ease: "power2.in" });
+                switchTl.to(audio, { volume: 0, duration: .15, ease: "power2.in", overwrite: "auto" });
             }
             switchTl.add(() => {
                 audio.src = t.file;
                 loadedIndex = currentAudioIndex;
                 audio.volume = 0;
-                if (autoplay) {
-                    audio.play().then(() => {
-                        gsap.to(audio, { volume: 1, duration: .6, ease: "sine.out" });
-                    }).catch(() => { audio.volume = 1; });
-                    setPlayingUI(true);
-                } else {
-                    audio.volume = 1;
-                }
+                if (autoplay) startPlayback(true);
+                else audio.volume = 1;
             });
 
             setBackground(t.bg);
             revealTitle();
             updateIndex();
+            updateMediaMetadata();
             warmTrack(currentAudioIndex + 1);
         }
 
         audio.addEventListener("ended", () => goTo(currentAudioIndex + 1));
+
+        // iOS pauses audio on interruptions (screen lock, lock-screen buttons,
+        // control center) without any button being tapped here — the element's
+        // own events are the source of truth, so the page never disagrees.
+        audio.addEventListener("play", () => setPlayingUI(true));
+        audio.addEventListener("pause", () => setPlayingUI(false));
 
         /* ================= buffering indicator ================= */
 
@@ -654,9 +658,46 @@
         audio.addEventListener("canplay", hideBuffering);
         audio.addEventListener("pause", hideBuffering);
 
+        /* ================= lock screen (Media Session) ================= */
+
+        function updateMediaMetadata() {
+            if (!("mediaSession" in navigator)) return;
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: tracks[currentAudioIndex].title,
+                artist: "MILO.CLOUD",
+                album: "Fifteen Transmissions",
+            });
+        }
+
+        // waking the screen: reassert the real state — iOS may have paused or
+        // silently stalled playback while locked
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState !== "visible") return;
+            if (eqCtx && eqCtx.state === "suspended" && !audio.paused) eqCtx.resume().catch(() => {});
+            setPlayingUI(!audio.paused);
+        });
+
+        if ("mediaSession" in navigator) {
+            const ms = navigator.mediaSession;
+            const syncState = () => { try { ms.playbackState = audio.paused ? "paused" : "playing"; } catch (e) {} };
+            audio.addEventListener("play", syncState);
+            audio.addEventListener("pause", syncState);
+            const on = (action, fn) => { try { ms.setActionHandler(action, fn); } catch (e) {} };
+            on("play", () => startPlayback());
+            on("pause", () => audio.pause());
+            on("nexttrack", () => goTo(currentAudioIndex + 1));
+            on("previoustrack", () => goTo(currentAudioIndex - 1));
+        }
+
         /* ================= equalizer (audio-reactive) ================= */
 
         let eqCtx = null, analyser = null, freq = null;
+
+        // iOS suspends the whole WebAudio graph when the screen locks, which
+        // silences any audio routed through it — so touch devices keep the
+        // plain element output (lock-screen playback keeps working) and the EQ
+        // bars run their idle pulse instead of reacting to the music.
+        const canAnalyse = window.matchMedia("(pointer: fine)").matches;
 
         function initAnalyser() {
             try {
@@ -829,6 +870,7 @@
         function prepInitialStates() {
             setBackground(tracks[0].bg);
             updateIndex();
+            updateMediaMetadata();
             titleEl.textContent = tracks[0].title;
             plainEl.textContent = tracks[0].title;
             if (!reduced) {
