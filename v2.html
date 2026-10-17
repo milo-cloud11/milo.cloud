@@ -179,14 +179,33 @@
             will-change: transform;
         }
         .ctl:focus-visible { opacity: 1; outline: none; }
-        .ctl .ul {
-            position: absolute; left: 0; right: 0; bottom: 0;
-            height: 1px; background: var(--ink);
-            transform: scaleX(0); transform-origin: left center;
-        }
 
         #playBtn .swap { position: relative; display: inline-block; }
         #playBtn .alt { position: absolute; left: 0; top: 0; }
+
+        /* mobile: reveals the hidden chrome (title block + track indicator) */
+        #infoBtn {
+            display: none;
+            position: fixed;                            /* out of flow — displaces nothing */
+            bottom: 76px;                               /* clears the 48px bar + its hit area */
+            right: clamp(20px, 6vw, 64px);              /* aligns with the footer's edge */
+            pointer-events: auto;    /* header is pointer-events: none */
+            align-items: center; justify-content: center;
+            width: 38px; height: 38px;
+            border: 1px solid rgba(232, 226, 210, .3);
+            border-radius: 50%;
+            background: none;
+            color: var(--ink-dim);
+            font-family: var(--mono);
+            font-style: italic;
+            font-size: 15px;
+            line-height: 1;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        #infoBtn:active { color: var(--ink); border-color: rgba(232, 226, 210, .6); }
 
         /* ---------- footer: title + timer, bottom-right ---------- */
 
@@ -195,6 +214,7 @@
             left: 0; right: 0; bottom: 0;
             display: flex; justify-content: flex-end; align-items: flex-end;
             padding: 0 clamp(20px, 6vw, 64px) 78px;   /* clears the 48px bar */
+            pointer-events: none;   /* its box would otherwise cover the info button */
         }
 
         .end-block {
@@ -208,6 +228,15 @@
             letter-spacing: .18em;
             color: var(--ink-dim);
             margin-bottom: 12px;   /* clear of the metal font's tall ascenders */
+        }
+
+        /* mobile duplicate of the header index — shown inside the title block */
+        #indexM {
+            display: none;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: .18em;
+            color: var(--ink-dim);
         }
 
         #title {
@@ -305,7 +334,10 @@
 
         @media (max-width: 640px) {
             #hint { display: none; }
-            #time { display: none; }
+            #infoBtn { display: inline-flex; }
+            .track-ind { display: none; }   /* its index moves into the title block */
+            #indexM { display: block; }
+            #title { font-size: 42px; }
             .end-block { max-width: 80vw; }
         }
 
@@ -330,13 +362,12 @@
                     <span class="cur">Play</span>
                     <span class="alt">Pause</span>
                 </span>
-                <i class="ul" aria-hidden="true"></i>
             </button>
             <button class="ctl" id="nextBtn" aria-label="Next track">
-                <span>Nxt</span><i class="ul" aria-hidden="true"></i>
+                <span>Nxt</span>
             </button>
             <button class="ctl" id="prevBtn" aria-label="Previous track">
-                <span>Prv</span><i class="ul" aria-hidden="true"></i>
+                <span>Prv</span>
             </button>
         </div>
         <div class="track-ind fx" id="trackInd">
@@ -344,10 +375,12 @@
             <span id="index">1 / 15</span>
             <span id="buffering"><span class="bbar" aria-hidden="true"><span class="bcol"><i></i><i></i><i></i></span><span class="bcol"><i></i><i></i><i></i></span><span class="bcol"><i></i><i></i><i></i></span></span><span id="bufWord">buffering</span></span>
         </div>
+        <button id="infoBtn" class="fx" aria-label="Show track info">i</button>
     </header>
 
     <footer>
         <div class="end-block fx" id="endBlock">
+            <div id="indexM">1 / 15</div>
             <div id="titlePlain">Single Thread</div>
             <h1 id="title">Single Thread</h1>
             <div id="time">00:00 / 00:00</div>
@@ -397,10 +430,13 @@
 
         const $ = (s) => document.querySelector(s);
         const titleEl = $("#title"), plainEl = $("#titlePlain"), indexEl = $("#index");
+        const indexMEl = $("#indexM");
         const fillEl = $("#progress-fill"), timeEl = $("#time"), hintEl = $("#hint");
         const seekEl = $("#seek");
         const bgA = $("#bgA"), bgB = $("#bgB"), torch = $("#torch");
         const eqBars = document.querySelectorAll(".eq i");
+        const trackIndEl = $("#trackInd"), endBlockEl = $("#endBlock"), infoBtn = $("#infoBtn");
+        const mqMobile = window.matchMedia("(max-width: 640px)");
 
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -486,7 +522,9 @@
         }
 
         function updateIndex() {
-            indexEl.textContent = `${currentAudioIndex + 1} / ${tracks.length}`;
+            const txt = `${currentAudioIndex + 1} / ${tracks.length}`;
+            indexEl.textContent = txt;       // header (desktop)
+            indexMEl.textContent = txt;       // title block (mobile)
         }
 
         /* ================= play state ================= */
@@ -717,20 +755,64 @@
             }
         });
 
-        /* button micro-interactions */
-        document.querySelectorAll(".ctl").forEach((btn) => {
-            const ul = btn.querySelector(".ul");
-            btn.addEventListener("mouseenter", () => {
-                gsap.to(btn, { y: -4, opacity: 1, duration: .22, ease: "power2.out", overwrite: "auto" });
-                gsap.to(ul, { scaleX: 1, duration: .32, ease: "power3.out", overwrite: "auto" });
+        /* button interactions: magnetic on desktop, press-down on touch */
+        const ctlBtns = document.querySelectorAll(".ctl");
+
+        if (window.matchMedia("(pointer: fine)").matches && !reduced) {
+            ctlBtns.forEach((btn) => {
+                const xTo = gsap.quickTo(btn, "x", { duration: .5, ease: "power3", overwrite: "auto" });
+                const yTo = gsap.quickTo(btn, "y", { duration: .5, ease: "power3", overwrite: "auto" });
+                btn.addEventListener("pointermove", (e) => {
+                    const r = btn.getBoundingClientRect();
+                    xTo((e.clientX - r.left - r.width / 2) * .35);
+                    yTo((e.clientY - r.top - r.height / 2) * .35);
+                });
+                btn.addEventListener("pointerleave", () => { xTo(0); yTo(0); });
+                btn.addEventListener("click", () => {
+                    gsap.fromTo(btn, { scale: .95 }, { scale: 1, duration: .4, ease: "back.out(3)" });
+                });
             });
-            btn.addEventListener("mouseleave", () => {
-                gsap.to(btn, { y: 0, opacity: .7, duration: .3, ease: "power2.out", overwrite: "auto" });
-                gsap.to(ul, { scaleX: 0, duration: .26, ease: "power2.inOut", overwrite: "auto" });
+        } else {
+            ctlBtns.forEach((btn) => {
+                btn.addEventListener("pointerdown", () => {
+                    gsap.to(btn, { y: 12, duration: .12, ease: "power2.out", overwrite: "auto" });
+                });
+                ["pointerup", "pointercancel"].forEach((ev) => btn.addEventListener(ev, () => {
+                    gsap.to(btn, { y: 0, duration: .35, ease: "back.out(2.5)" });
+                }));
             });
-            btn.addEventListener("click", () => {
-                gsap.fromTo(btn, { scale: .95 }, { scale: 1, duration: .4, ease: "back.out(3)", overwrite: "auto" });
-            });
+        }
+
+        /* ================= mobile: info toggle ================= */
+
+        // On phones the chrome (title block + track indicator) stays hidden
+        // behind the info button; a tap reveals it for 5s.
+        let infoTimer = null;
+
+        function hideChrome() {
+            infoTimer = null;
+            gsap.to([trackIndEl, endBlockEl], { autoAlpha: 0, y: -6, duration: .4, ease: "power2.in" });
+            gsap.to(infoBtn, { autoAlpha: 1, duration: .35, delay: .2, ease: "power2.out" });
+        }
+
+        infoBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (infoTimer) clearTimeout(infoTimer);
+            gsap.to(infoBtn, { autoAlpha: 0, duration: .25, ease: "power2.in" });
+            gsap.fromTo([trackIndEl, endBlockEl], { y: 10 }, { autoAlpha: 1, y: 0, duration: .45, ease: "power2.out" });
+            infoTimer = setTimeout(hideChrome, 7000);
+            if (document.activeElement) document.activeElement.blur();
+        });
+
+        // crossing the breakpoint resets to that layout's resting state
+        mqMobile.addEventListener("change", (e) => {
+            if (infoTimer) { clearTimeout(infoTimer); infoTimer = null; }
+            if (e.matches) {
+                gsap.to([trackIndEl, endBlockEl], { autoAlpha: 0, duration: .3 });
+                gsap.to(infoBtn, { autoAlpha: 1, duration: .3 });
+            } else {
+                gsap.to([trackIndEl, endBlockEl], { autoAlpha: 1, y: 0, duration: .3 });
+            }
         });
 
         /* torch follows cursor */
@@ -757,9 +839,12 @@
         }
 
         function intro() {
+            const mobile = mqMobile.matches;
+
             if (reduced) {
                 gsap.set("#veil", { display: "none" });
                 gsap.set(".fx", { autoAlpha: 1 });
+                if (mobile) gsap.set([trackIndEl, endBlockEl], { autoAlpha: 0 });
                 return;
             }
 
@@ -775,15 +860,29 @@
                 .to("#veil", { yPercent: -100, duration: 1, ease: "power4.inOut", delay: .45 })
                 .set("#veil", { display: "none" })
                 // UI reveals, overlapping the veil lift
-                .set("#controls", { autoAlpha: 1 }, "-=.55")   // container first, so the buttons' visibility:inherit resolves to visible
-                .set("#endBlock", { autoAlpha: 1 }, "<")
-                .fromTo("#controls .ctl", { autoAlpha: 0, y: -16 }, { autoAlpha: .7, y: 0, duration: .55, stagger: .08 }, "<")
-                .fromTo("#trackInd", { autoAlpha: 0, y: -12 }, { autoAlpha: 1, y: 0, duration: .6 }, "<.1")
-                .to(titleSplit.chars, { yPercent: 0, duration: .8, ease: "power4.out", stagger: { each: .02 } }, "<")
-                .fromTo(plainEl, { autoAlpha: 0 }, { autoAlpha: 1, duration: .5, ease: "power2.out" }, "-=.5")
-                .fromTo("#time", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5 }, "-=.4")
-                .fromTo(hintEl, { autoAlpha: 0 }, { autoAlpha: 1, duration: .8 }, "-=.2")
-                .to(hintEl, { autoAlpha: 0, duration: 1, delay: 6 });
+                .set("#controls", { autoAlpha: 1 }, "-=.55");   // container first, so the buttons' visibility:inherit resolves to visible
+
+            if (mobile) {
+                // chrome stays hidden behind the info button — set final title
+                // states so a reveal shows it fully formed
+                tl.set(titleSplit.chars, { yPercent: 0 })
+                  .set([plainEl, timeEl, indexMEl], { autoAlpha: 1 });
+            } else {
+                tl.set(endBlockEl, { autoAlpha: 1 });
+            }
+
+            tl.fromTo("#controls .ctl", { autoAlpha: 0, y: -16 }, { autoAlpha: .7, y: 0, duration: .55, stagger: .08 }, "<");
+
+            if (mobile) {
+                tl.fromTo(infoBtn, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5 }, "<.1");
+            } else {
+                tl.fromTo(trackIndEl, { autoAlpha: 0, y: -12 }, { autoAlpha: 1, y: 0, duration: .6 }, "<.1")
+                  .to(titleSplit.chars, { yPercent: 0, duration: .8, ease: "power4.out", stagger: { each: .02 } }, "<")
+                  .fromTo(plainEl, { autoAlpha: 0 }, { autoAlpha: 1, duration: .5, ease: "power2.out" }, "-=.5")
+                  .fromTo(timeEl, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .5 }, "-=.4")
+                  .fromTo(hintEl, { autoAlpha: 0 }, { autoAlpha: 1, duration: .8 }, "-=.2")
+                  .to(hintEl, { autoAlpha: 0, duration: 1, delay: 6 });
+            }
         }
 
         /* boot: hold the veil until fonts + track 1's mp3 and bg GIF are ready
