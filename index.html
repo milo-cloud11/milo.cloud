@@ -669,13 +669,18 @@
             });
         }
 
-        // waking the screen: reassert the real state — iOS may have paused or
-        // silently stalled playback while locked
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState !== "visible") return;
+        // returning to the page (waking the screen, tab/app switch): reassert
+        // the real state. iOS freezes the page while locked, so lock-screen
+        // presses don't fire 'pause' here in time — and screen lock/unlock
+        // never fires visibilitychange on iOS, so we hook pageshow + focus too.
+        function resyncPlaybackState() {
+            if (document.visibilityState === "hidden") return;
             if (eqCtx && eqCtx.state === "suspended" && !audio.paused) eqCtx.resume().catch(() => {});
             setPlayingUI(!audio.paused);
-        });
+        }
+        document.addEventListener("visibilitychange", resyncPlaybackState);
+        window.addEventListener("pageshow", resyncPlaybackState);
+        window.addEventListener("focus", resyncPlaybackState);
 
         if ("mediaSession" in navigator) {
             const ms = navigator.mediaSession;
