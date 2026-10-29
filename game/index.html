@@ -199,6 +199,8 @@ footer b{color:var(--bone);font-weight:400}
 <script>
 if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.documentElement.classList.add('js-intro');
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
 }
 </script>
 <style>
@@ -221,7 +223,7 @@ if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matche
 <main id="top">
 
   <header class="hero pad">
-    <h1 id="statement">A VRChat World, designed, built and scripted solo in Unity 2022.3 with UdonSharp.</h1>
+    <h1 id="statement">A VRChat World, designed, built and scripted solo in Unity with UdonSharp.</h1>
     <a class="btn" data-hero href="https://vrchat.com/home/world/wrld_2db07f88-35c7-4e42-bcd3-53cb5c501638/info" target="_blank" rel="noopener">Enter Hollow on VRChat</a>
   </header>
 
@@ -236,27 +238,13 @@ if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matche
     <div class="c-heading pad" data-split-heading><h2>Screenshots</h2></div>
     <div class="selected-work_list pad">
       <div class="selected-work_inner">
-        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The keeper. A glowing skull and a floating keypad.">
-          <div class="selected-work_clickable">
-            <div class="clickable_wrap">
-              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The keeper</span></button>
-            </div>
-          </div>
-          <div class="selected-work_card"><img src="2-keeper.png" alt="In VRChat, a skeleton seated in a dark room with a glowing red skull and a floating keypad"></div>
-          <div class="selected-work_details">
-            <div class="selected-work_title">The keeper</div>
-            <p class="selected-work_tag">A glowing skull and a floating keypad.</p>
-          </div>
-        </div>
-      </div>
-      <div class="selected-work_inner">
-        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The only lit door.">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The only lit door. The way in, under moonlight.">
           <div class="selected-work_clickable">
             <div class="clickable_wrap">
               <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The only lit door</span></button>
             </div>
           </div>
-          <div class="selected-work_card"><img src="1-door.png" alt="In VRChat, a dark path leading to a small lit arched doorway"></div>
+          <div class="selected-work_card"><img src="1-door.png" alt=""></div>
           <div class="selected-work_details">
             <div class="selected-work_title">The only lit door</div>
             <p class="selected-work_tag">The way in, under moonlight.</p>
@@ -264,72 +252,16 @@ if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matche
         </div>
       </div>
       <div class="selected-work_inner">
-        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="Night shore at the cave mouth.">
-          <div class="selected-work_clickable">
-            <div class="clickable_wrap">
-              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Night shore</span></button>
-            </div>
-          </div>
-          <div class="selected-work_card"><img src="3-shore.png" alt="In VRChat, moonlit water at a cave shore at night"></div>
-          <div class="selected-work_details">
-            <div class="selected-work_title">Night shore</div>
-            <p class="selected-work_tag">Moonlit water at the cave mouth.</p>
-          </div>
-        </div>
-      </div>
-      <div class="selected-work_inner">
-        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The keypad, mid entry, in the VRChat desktop client.">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The keypad. Script that grants access or teleports you off the bridge">
           <div class="selected-work_clickable">
             <div class="clickable_wrap">
               <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The keypad</span></button>
             </div>
           </div>
-          <div class="selected-work_card"><img src="7-154324.png" alt="In VRChat, a floating keypad with asterisks and a red enter button, with the desktop interface visible"></div>
+          <div class="selected-work_card"><img src="7-154324.png" alt=""></div>
           <div class="selected-work_details">
             <div class="selected-work_title">The keypad</div>
-            <p class="selected-work_tag">Mid entry, in the desktop client.</p>
-          </div>
-        </div>
-      </div>
-      <div class="selected-work_inner">
-        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The hidden theater.">
-          <div class="selected-work_clickable">
-            <div class="clickable_wrap">
-              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The hidden theater</span></button>
-            </div>
-          </div>
-          <div class="selected-work_card"><img src="4-theater.png" alt="In VRChat, a hidden theater with a screen playing a horror film"></div>
-          <div class="selected-work_details">
-            <div class="selected-work_title">The hidden theater</div>
-            <p class="selected-work_tag">A horror film past the puzzle.</p>
-          </div>
-        </div>
-      </div>
-      <div class="selected-work_inner">
-        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="In world, at night.">
-          <div class="selected-work_clickable">
-            <div class="clickable_wrap">
-              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge In world, at night</span></button>
-            </div>
-          </div>
-          <div class="selected-work_card"><img src="9-172108.png" alt="In VRChat, a night scene from the world of Hollow"></div>
-          <div class="selected-work_details">
-            <div class="selected-work_title">In world, at night</div>
-            <p class="selected-work_tag">Deep in the world.</p>
-          </div>
-        </div>
-      </div>
-      <div class="selected-work_inner">
-        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The main hall. Concrete and light strips, with a green glow on the far wall.">
-          <div class="selected-work_clickable">
-            <div class="clickable_wrap">
-              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The main hall</span></button>
-            </div>
-          </div>
-          <div class="selected-work_card"><img src="10-Main-Hall.png" alt="In VRChat, a large concrete hall lit by white light strips, with a green glowing image on the far wall"></div>
-          <div class="selected-work_details">
-            <div class="selected-work_title">The main hall</div>
-            <p class="selected-work_tag">Concrete and light strips, with a green glow on the far wall.</p>
+            <p class="selected-work_tag">Script that grants access or teleports you off the bridge</p>
           </div>
         </div>
       </div>
@@ -340,7 +272,7 @@ if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matche
               <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Unity editor, keypad script</span></button>
             </div>
           </div>
-          <div class="selected-work_card"><img src="5-editor-keypad.png" alt="Unity editor, the UdonSharp Keypad script open beside the keypad scene"></div>
+          <div class="selected-work_card"><img src="4-theater.png" alt=""></div>
           <div class="selected-work_details">
             <div class="selected-work_title">Unity editor</div>
             <p class="selected-work_tag">The keypad script and scene wiring.</p>
@@ -354,7 +286,7 @@ if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matche
               <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Unity editor, SkullGrab</span></button>
             </div>
           </div>
-          <div class="selected-work_card"><img src="6-editor-skull.png" alt="Unity editor, a red skull selected with the SkullGrab Udon program and VRC Pickup and Object Sync in the Inspector"></div>
+          <div class="selected-work_card"><img src="9-172108.png" alt=""></div>
           <div class="selected-work_details">
             <div class="selected-work_title">Unity editor</div>
             <p class="selected-work_tag">SkullGrab with Object Sync in the Inspector.</p>
@@ -362,16 +294,86 @@ if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matche
         </div>
       </div>
       <div class="selected-work_inner">
-        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="Unity editor. A view from the project.">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The main hall. The main hall and hidden theater.">
           <div class="selected-work_clickable">
             <div class="clickable_wrap">
-              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Unity editor, project view</span></button>
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The main hall</span></button>
             </div>
           </div>
-          <div class="selected-work_card"><img src="8-160639.png" alt="Unity editor, a view from the Hollow project"></div>
+          <div class="selected-work_card"><img src="10-Main-Hall.png" alt=""></div>
           <div class="selected-work_details">
-            <div class="selected-work_title">Unity editor</div>
-            <p class="selected-work_tag">A view from the project.</p>
+            <div class="selected-work_title">The main hall</div>
+            <p class="selected-work_tag">The main hall and hidden theater.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="Exit sign. The main hall's rear exit sign.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Exit sign</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="5-editor-keypad.png" alt=""></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">Exit sign</div>
+            <p class="selected-work_tag">The main hall's rear exit sign.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The theater. Theater screen and lounge seating.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The theater</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="6-editor-skull.png" alt=""></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">The theater</div>
+            <p class="selected-work_tag">Theater screen and lounge seating.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="Don't do it. Grabbing the skull teleports you to the Black Sea.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Don't do it</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="8-160639.png" alt=""></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">Don't do it</div>
+            <p class="selected-work_tag">Grabbing the skull teleports you to the Black Sea.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The Black Sea. A neverending watery wasteland.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The Black Sea</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="2-keeper.png" alt=""></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">The Black Sea</div>
+            <p class="selected-work_tag">A neverending watery wasteland.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The keeper. A glowing skull and a floating keypad.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The keeper</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="3-shore.png" alt=""></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">The keeper</div>
+            <p class="selected-work_tag">A glowing skull and a floating keypad.</p>
           </div>
         </div>
       </div>
@@ -383,11 +385,11 @@ if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matche
     <dl class="specs pad">
       <div class="spec" data-spec><dt>Engine</dt><dd>Unity 2022.3.22f1</dd></div>
       <div class="spec" data-spec><dt>SDK</dt><dd>VRChat Creator SDK, Udon</dd></div>
-      <div class="spec" data-spec><dt>Scripting</dt><dd>UdonSharp, Keypad and SkullGrab</dd></div>
-      <div class="spec" data-spec><dt>Interactivity</dt><dd>VRC Pickup, VRC Object Sync, triggers</dd></div>
-      <div class="spec" data-spec><dt>Audio</dt><dd>Audio Sources for ambience and theater sound</dd></div>
+      <div class="spec" data-spec><dt>Scripting</dt><dd>UdonSharp, C#</dd></div>
+      <div class="spec" data-spec><dt>Interactivity</dt><dd>VRC Pickup, VRC Object Sync, Collision Triggers</dd></div>
+      <div class="spec" data-spec><dt>Audio</dt><dd>Sound Design in Ableton live</dd></div>
       <div class="spec" data-spec><dt>Role</dt><dd>Solo build, design, layout, lighting and scripting</dd></div>
-      <div class="spec" data-spec><dt>Platform</dt><dd>VRChat, PCVR and Desktop</dd></div>
+      <div class="spec" data-spec><dt>Platform</dt><dd>VRChat, PC and Android</dd></div>
     </dl>
   </section>
 
@@ -563,6 +565,7 @@ if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matche
         .call(function(){
           document.documentElement.classList.remove('js-intro');
           gsap.set('#nav, .sec, .finale, footer', { autoAlpha:0 });
+          if (lenis) lenis.scrollTo(0, { immediate:true }); else window.scrollTo(0, 0);
           ScrollTrigger.refresh();
           if (introTl) introTl.play();
         });
