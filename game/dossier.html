@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HOLLOW, a VRChat horror world by Eric Allen</title>
+<meta name="description" content="Hollow is a horror world for VRChat. Designed, built and scripted solo in Unity 2022.3 with UdonSharp. Video walkthrough, screenshots and the VRChat world link.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='10' fill='%23c41f3c'/%3E%3C/svg%3E">
+<meta property="og:title" content="HOLLOW, a VRChat horror world">
+<meta property="og:description" content="A dead shore, a door left open, and a red skull waiting to be picked up. Solo built in Unity 2022.3 with UdonSharp.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="2-keeper.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0a0807;
+  --bone:#e9dcc3;
+  --bone-dim:#9a8d74;
+  --blood:#c41f3c;
+  --blood-hot:#ff3b55;
+  --line:rgba(233,220,195,.14);
+  --fell:'IM Fell English',serif;
+  --fellsc:'IM Fell English SC',serif;
+  --mono:'Fragment Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:var(--blood);color:var(--ink)}
+body{
+  background:var(--ink);color:var(--bone);
+  font-family:var(--fell);-webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--blood);outline-offset:3px}
+img,video{max-width:100%;display:block}
+.wrap{max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+
+/* top bar */
+.top{
+  display:flex;justify-content:space-between;gap:1em;flex-wrap:wrap;
+  padding:20px 0;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.24em;color:var(--bone-dim);
+}
+
+/* hero */
+.hero{padding:clamp(2rem,5vw,3.5rem) 0 clamp(1.4rem,3vw,2.2rem)}
+h1{
+  font-family:var(--fellsc);font-weight:400;
+  font-size:clamp(3rem,9vw,5.8rem);line-height:1;letter-spacing:.05em;
+}
+h1 .dot{color:var(--blood-hot)}
+.sub{
+  font-style:italic;font-size:clamp(1.05rem,2.2vw,1.3rem);
+  color:var(--bone);margin-top:1rem;line-height:1.55;max-width:56ch;
+}
+.cta-row{margin-top:1.8rem;display:flex;align-items:center;gap:1.6em;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;text-decoration:none;
+  font-family:var(--mono);font-size:.76rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bone);padding:1em 2em;
+  border:1px solid rgba(196,31,60,.65);background:rgba(196,31,60,.09);
+  transition:background .3s,color .3s,border-color .3s;
+}
+.btn:hover{background:var(--blood);color:var(--ink);border-color:var(--blood)}
+.listing-note{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--bone-dim);line-height:2;
+}
+
+/* video */
+.plate{border:1px solid var(--line);background:#000}
+.plate video{width:100%;aspect-ratio:16/9;background:#000}
+.plate figcaption,.cap{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--bone-dim);padding:.8rem .2rem .2rem;line-height:1.9;
+}
+.cap b{color:var(--blood-hot);font-weight:400;margin-right:.7em}
+
+/* sections */
+.sec{margin-top:clamp(3rem,7vw,5rem)}
+.label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--blood-hot);margin-bottom:1.4rem;
+}
+.label span{color:var(--bone-dim);letter-spacing:.16em;margin-left:1.2em}
+.copy{font-size:1.1rem;line-height:1.75;color:var(--bone);max-width:72ch}
+.copy em{color:var(--bone-dim)}
+
+/* gallery */
+.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:720px){.gallery{grid-template-columns:1fr}}
+.shot{
+  border:1px solid var(--line);background:#000;cursor:pointer;
+  transition:border-color .3s;
+}
+.shot:hover{border-color:rgba(196,31,60,.6)}
+.shot img{width:100%;aspect-ratio:16/9;object-fit:cover;filter:brightness(.92);transition:filter .3s}
+.shot:hover img{filter:none}
+.shot figcaption{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--bone-dim);padding:.7rem .8rem;line-height:1.8;
+}
+
+/* specs */
+.spec{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:1rem;padding:.9rem 0;border-top:1px solid var(--line)}
+.spec:last-of-type{border-bottom:1px solid var(--line)}
+.spec dt{font-family:var(--mono);font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--bone-dim);padding-top:.35em}
+.spec dd{font-size:1.05rem;line-height:1.5}
+
+/* footer */
+footer{
+  border-top:1px solid var(--line);margin-top:clamp(3.5rem,8vw,6rem);
+  padding:2rem 0 2.6rem;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bone-dim);line-height:2.4;
+}
+footer b{color:var(--bone);font-weight:400}
+
+/* lightbox */
+.lb{
+  position:fixed;inset:0;z-index:100;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
+  background:rgba(6,4,3,.95);padding:clamp(16px,4vw,48px);
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.lb.on{opacity:1;pointer-events:auto}
+.lb img{max-width:min(1400px,96vw);max-height:80vh;object-fit:contain;border:1px solid var(--line)}
+.lb p{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--bone-dim)}
+.lb-x{
+  position:absolute;top:18px;right:18px;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bone);background:none;border:1px solid var(--line);padding:.7em 1.2em;cursor:pointer;
+}
+.lb-x:hover{border-color:var(--blood);color:var(--blood-hot)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <span>ERIC ALLEN</span>
+    <span>A VRCHAT WORLD</span>
+  </header>
+
+  <section class="hero">
+    <h1>HOLLOW<span class="dot">.</span></h1>
+    <p class="sub">A short horror world for VRChat. Designed, built and scripted solo in Unity 2022.3 with UdonSharp.</p>
+    <div class="cta-row">
+      <a class="btn" href="https://vrchat.com/home/world/wrld_2db07f88-35c7-4e42-bcd3-53cb5c501638/info" target="_blank" rel="noopener">Enter Hollow on VRChat</a>
+      <p class="listing-note">The listing opens in any browser.<br>The VRChat client is required to enter the world.</p>
+    </div>
+  </section>
+
+  <figure class="plate">
+    <video controls preload="metadata" playsinline poster="1-door.png">
+      <source src="HollowVRWorld.mp4" type="video/mp4">
+      Your browser does not support embedded video. <a href="HollowVRWorld.mp4">Download the walkthrough.</a>
+    </video>
+    <figcaption>Captured in client. The full loop from shore to theater, including the puzzle and the pickup.</figcaption>
+  </figure>
+
+  <section class="sec">
+    <p class="label">The world</p>
+    <p class="copy">Hollow drops visitors on a moonlit shore at night. The only light leads to a doorway that should not be open. Inside, a skeleton keeps watch over a glowing red skull. A keypad puzzle gates the path deeper, and the skull can be picked up and carried. Past the puzzle, a hidden theater plays a horror film. The world favors atmosphere over startle, with sound, fog and lighting tuned for slow dread.</p>
+  </section>
+
+  <section class="sec">
+    <p class="label">Screenshots <span>Click any image to enlarge.</span></p>
+    <div class="gallery">
+      <figure class="shot" tabindex="0" role="button" data-cap="The keeper. A glowing skull and a floating keypad.">
+        <img src="2-keeper.png" alt="In VRChat, a skeleton seated in a dark room with a glowing red skull and a floating keypad" loading="lazy">
+        <figcaption>The keeper. A glowing skull and a floating keypad.</figcaption>
+      </figure>
+      <figure class="shot" tabindex="0" role="button" data-cap="The only lit door.">
+        <img src="1-door.png" alt="In VRChat, a dark path leading to a small lit arched doorway" loading="lazy">
+        <figcaption>The only lit door.</figcaption>
+      </figure>
+      <figure class="shot" tabindex="0" role="button" data-cap="Night shore at the cave mouth.">
+        <img src="3-shore.png" alt="In VRChat, moonlit water at a cave shore at night" loading="lazy">
+        <figcaption>Night shore at the cave mouth.</figcaption>
+      </figure>
+      <figure class="shot" tabindex="0" role="button" data-cap="The hidden theater.">
+        <img src="4-theater.png" alt="In VRChat, a hidden theater with a screen playing a horror film" loading="lazy">
+        <figcaption>The hidden theater.</figcaption>
+      </figure>
+      <figure class="shot" tabindex="0" role="button" data-cap="Unity editor. The UdonSharp keypad script and scene.">
+        <img src="5-editor-keypad.png" alt="Unity editor, the UdonSharp Keypad script open beside the keypad scene" loading="lazy">
+        <figcaption>Unity editor. The UdonSharp keypad script and scene.</figcaption>
+      </figure>
+      <figure class="shot" tabindex="0" role="button" data-cap="Unity editor. SkullGrab with VRC Pickup and Object Sync.">
+        <img src="6-editor-skull.png" alt="Unity editor, a red skull selected with the SkullGrab Udon program and VRC Pickup and Object Sync in the Inspector" loading="lazy">
+        <figcaption>Unity editor. SkullGrab with VRC Pickup and Object Sync.</figcaption>
+      </figure>
+      <figure class="shot" tabindex="0" role="button" data-cap="The keypad, mid entry, in the VRChat desktop client.">
+        <img src="7-154324.png" alt="In VRChat, a floating keypad with asterisks and a red enter button, with the desktop interface visible" loading="lazy">
+        <figcaption>The keypad, mid entry, in the VRChat desktop client.</figcaption>
+      </figure>
+      <figure class="shot" tabindex="0" role="button" data-cap="Unity editor. A view from the project.">
+        <img src="8-160639.png" alt="Unity editor, a view from the Hollow project" loading="lazy">
+        <figcaption>Unity editor. A view from the project.</figcaption>
+      </figure>
+      <figure class="shot" tabindex="0" role="button" data-cap="In world, at night.">
+        <img src="9-172108.png" alt="In VRChat, a night scene from the world of Hollow" loading="lazy">
+        <figcaption>In world, at night.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec">
+    <p class="label">The build</p>
+    <dl>
+      <div class="spec"><dt>Engine</dt><dd>Unity 2022.3.22f1</dd></div>
+      <div class="spec"><dt>SDK</dt><dd>VRChat Creator SDK, Udon</dd></div>
+      <div class="spec"><dt>Scripting</dt><dd>UdonSharp, Keypad and SkullGrab</dd></div>
+      <div class="spec"><dt>Interactivity</dt><dd>VRC Pickup, VRC Object Sync, triggers</dd></div>
+      <div class="spec"><dt>Audio</dt><dd>Audio Sources for ambience and theater sound</dd></div>
+      <div class="spec"><dt>Role</dt><dd>Solo build, design, layout, lighting and scripting</dd></div>
+      <div class="spec"><dt>Platform</dt><dd>VRChat, PCVR and Desktop</dd></div>
+    </dl>
+  </section>
+
+  <footer>
+    <b>ERIC ALLEN</b>. HOLLOW, A VRCHAT WORLD. 2026<br>
+    UNITY 2022.3.22F1, UDONSHARP, VRC CREATOR SDK
+  </footer>
+</div>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-x" id="lb-x" type="button">Close</button>
+  <img id="lb-img" src="" alt="">
+  <p id="lb-cap"></p>
+</div>
+
+<script>
+(function(){
+  var lb = document.getElementById('lb');
+  var lbImg = document.getElementById('lb-img');
+  var lbCap = document.getElementById('lb-cap');
+  var lastFocus = null;
+
+  function open(fig){
+    var img = fig.querySelector('img');
+    lbImg.src = img.src;
+    lbImg.alt = img.alt;
+    lbCap.textContent = fig.getAttribute('data-cap') || '';
+    lastFocus = fig;
+    lb.classList.add('on');
+    lb.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('lb-x').focus();
+  }
+  function close(){
+    lb.classList.remove('on');
+    lb.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+
+  document.querySelectorAll('.shot').forEach(function(fig){
+    fig.addEventListener('click', function(){ open(fig); });
+    fig.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(fig); }
+    });
+  });
+
+  document.getElementById('lb-x').addEventListener('click', close);
+  lb.addEventListener('click', function(e){ if (e.target === lb) close(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && lb.classList.contains('on')) close(); });
+})();
+</script>
+
+</body>
+</html>

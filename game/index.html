@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HOLLOW, a VRChat horror world by Eric Allen</title>
+<meta name="description" content="Hollow is a horror world for VRChat. Designed, built and scripted solo in Unity 2022.3 with UdonSharp. Video walkthrough, screenshots and the VRChat world link.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='10' fill='%23ff2d4a'/%3E%3C/svg%3E">
+<meta property="og:title" content="HOLLOW, a VRChat horror world">
+<meta property="og:description" content="A dead shore, a door left open, and a red skull waiting to be picked up. Solo built in Unity 2022.3 with UdonSharp.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://milo.cloud/game/2-keeper.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=satoshi@400,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#080607;
+  --panel:#0e0b0c;
+  --bone:#efe6d6;
+  --bone-dim:#8f8577;
+  --blood:#ff2d4a;
+  --line:rgba(239,230,214,.13);
+  --disp:'Clash Display',sans-serif;
+  --body:'Satoshi',sans-serif;
+  --mono:'Fragment Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scrollbar-color:#3a2226 var(--ink)}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:#3a2226}
+::selection{background:var(--blood);color:var(--ink)}
+body{
+  background:var(--ink);color:var(--bone);
+  font-family:var(--body);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--blood);outline-offset:3px}
+img,video{max-width:100%;display:block}
+.pad{padding-left:clamp(18px,4vw,44px);padding-right:clamp(18px,4vw,44px)}
+.wrap{max-width:1280px;margin:0 auto}
+
+/* preloader */
+.pre{
+  position:fixed;inset:0;z-index:300;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+}
+.pre-logo{
+  width:clamp(140px,20vw,207px);height:auto;opacity:0;will-change:opacity;
+}
+@media(prefers-reduced-motion:reduce){.pre{display:none}}
+
+/* progress + nav */
+.progress{
+  position:fixed;top:0;left:0;right:0;height:2px;z-index:150;
+  background:var(--blood);transform:scaleX(0);transform-origin:left;
+}
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:140;
+  display:flex;justify-content:space-between;align-items:center;gap:1em;
+  padding:1.1rem clamp(18px,4vw,44px);
+  transition:background .4s,backdrop-filter .4s;
+}
+.nav.solid{background:rgba(8,6,7,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .logo{text-decoration:none;line-height:0}
+.nav .logo img{display:block;height:44px;width:auto}
+.nav .enter{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  text-decoration:none;color:var(--bone);border:1px solid rgba(255,45,74,.55);padding:.7em 1.2em;
+  transition:background .3s,color .3s,border-color .3s;
+}
+.nav .enter:hover{background:var(--blood);color:var(--ink);border-color:var(--blood)}
+
+/* access code screen */
+.code-screen{
+  position:fixed;inset:0;z-index:400;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;pointer-events:none;
+}
+.code-screen p{
+  font-family:var(--disp);font-weight:600;letter-spacing:.01em;
+  font-size:clamp(1.8rem,5.5vw,4rem);text-align:center;padding:0 1rem;
+}
+
+/* hero, bold statement below logo, nothing else */
+.hero{padding-top:30vh;padding-bottom:clamp(2.6rem,6vw,4rem)}
+h1{
+  font-family:var(--disp);font-weight:600;letter-spacing:.005em;
+  font-size:clamp(2.3rem,6vw,3.2rem);line-height:1.06;
+  max-width:21ch;
+}
+.hero .btn{margin-top:clamp(2rem,5vw,3rem)}
+.hero .code-cap{margin-top:.8rem}
+.btn{
+  display:inline-flex;align-items:center;text-decoration:none;cursor:pointer;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bone);padding:1.05em 2em;background:rgba(255,45,74,.09);
+  border:1px solid rgba(255,45,74,.6);
+}
+.btn:hover{background:var(--blood);color:var(--ink);border-color:var(--blood)}
+
+/* fullwidth video, no banner */
+.reel-full{border-top:1px solid var(--line);border-bottom:1px solid var(--line);will-change:opacity}
+.reel-full video{width:100%;aspect-ratio:16/9;background:#000}
+
+/* sections */
+.sec{padding-top:clamp(4.5rem,10vw,7.5rem)}
+.c-heading h2{
+  font-family:var(--disp);font-weight:600;letter-spacing:.02em;
+  font-size:clamp(1.7rem,4vw,2.6rem);line-height:1;
+}
+
+/* screenshots, two per row, equal size */
+.selected-work_list{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  column-gap:clamp(14px,2vw,24px);row-gap:clamp(3rem,6vw,4.5rem);
+  margin-top:clamp(2.5rem,6vw,4rem);
+}
+@media(max-width:760px){.selected-work_list{grid-template-columns:1fr}}
+.selected-work_item{position:relative}
+.selected-work_clickable{
+  position:absolute;top:0;left:0;right:0;z-index:2;aspect-ratio:16/9;
+}
+.clickable_wrap{position:absolute;inset:0}
+.clickable_btn{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.clickable_text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.selected-work_card{overflow:hidden;background:#000}
+.selected-work_card img{
+  width:100%;height:auto;
+  filter:brightness(.92);transition:filter .5s;
+}
+.selected-work_item:hover .selected-work_card img{filter:brightness(1.04)}
+.selected-work_details{margin-top:1.2rem;margin-bottom:.5rem}
+.selected-work_title{
+  font-family:var(--disp);font-weight:500;font-size:1.35rem;letter-spacing:.01em;
+  margin-bottom:.4rem;transition:color .3s;
+}
+.selected-work_item:hover .selected-work_title{color:var(--blood)}
+.selected-work_tag{color:var(--bone-dim);font-size:1rem}
+
+/* build */
+#build .c-heading{text-align:center}
+.specs{margin:clamp(2.5rem,6vw,4rem) auto 0;max-width:860px}
+.spec{display:grid;grid-template-columns:minmax(110px,170px) 1fr;gap:1rem;padding:1rem 0;border-top:1px solid var(--line)}
+.spec:last-of-type{border-bottom:1px solid var(--line)}
+.spec dt{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--bone-dim);padding-top:.35em;
+}
+.spec dd{font-size:1.02rem}
+
+/* finale */
+.finale{
+  position:relative;text-align:center;overflow:hidden;
+  padding:clamp(6rem,14vw,10rem) clamp(18px,4vw,44px);
+}
+.finale .glow{
+  position:absolute;left:50%;bottom:-40%;width:72vw;height:70vh;transform:translateX(-50%);
+  background:radial-gradient(ellipse at center,rgba(255,45,74,.14),transparent 62%);
+  pointer-events:none;
+}
+.finale h2{
+  font-family:var(--disp);font-weight:600;letter-spacing:.02em;position:relative;
+  font-size:clamp(2.4rem,7vw,5rem);margin-bottom:2.4rem;
+}
+.finale h2 i{font-style:normal;color:var(--blood)}
+.finale .btn{position:relative}
+
+footer{
+  border-top:1px solid var(--line);
+  padding:2.2rem clamp(18px,4vw,44px);text-align:center;
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--bone-dim);line-height:2.4;
+}
+footer b{color:var(--bone);font-weight:400}
+
+/* lightbox */
+.lb{
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
+  background:rgba(5,3,4,.96);padding:clamp(16px,4vw,48px);
+  opacity:0;visibility:hidden;
+}
+.lb.on{visibility:visible}
+.lb img{max-width:min(1400px,96vw);max-height:80vh;object-fit:contain;border:1px solid var(--line)}
+.lb p{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--bone-dim)}
+.lb-x{
+  position:absolute;top:18px;right:18px;cursor:pointer;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bone);background:none;border:1px solid var(--line);padding:.7em 1.2em;
+}
+.lb-x:hover{border-color:var(--blood);color:var(--blood)}
+</style>
+<noscript><style>.pre{display:none}</style></noscript>
+<script>
+if (!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.documentElement.classList.add('js-intro');
+}
+</script>
+<style>
+.js-intro #nav,.js-intro .sec,.js-intro .finale,.js-intro footer{display:none}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<div class="pre" id="pre" aria-hidden="true">
+  <img class="pre-logo" src="logo_TXT.png" alt="">
+</div>
+
+<nav class="nav" id="nav">
+  <a class="logo" href="#top"><img src="logo_TXT.png" alt="Hollow"></a>
+  <a class="enter" href="https://vrchat.com/home/world/wrld_2db07f88-35c7-4e42-bcd3-53cb5c501638/info" target="_blank" rel="noopener">Enter on VRChat</a>
+</nav>
+
+<main id="top">
+
+  <header class="hero pad">
+    <h1 id="statement">A VRChat World, designed, built and scripted solo in Unity 2022.3 with UdonSharp.</h1>
+    <a class="btn" data-hero href="https://vrchat.com/home/world/wrld_2db07f88-35c7-4e42-bcd3-53cb5c501638/info" target="_blank" rel="noopener">Enter Hollow on VRChat</a>
+  </header>
+
+  <div class="reel-full" id="reel">
+    <video controls autoplay muted loop playsinline preload="auto">
+      <source src="HollowVRWorld.mp4" type="video/mp4">
+      Your browser does not support embedded video. <a href="HollowVRWorld.mp4">Download the walkthrough.</a>
+    </video>
+  </div>
+
+  <section class="sec" id="views">
+    <div class="c-heading pad" data-split-heading><h2>Screenshots</h2></div>
+    <div class="selected-work_list pad">
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The keeper. A glowing skull and a floating keypad.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The keeper</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="2-keeper.png" alt="In VRChat, a skeleton seated in a dark room with a glowing red skull and a floating keypad"></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">The keeper</div>
+            <p class="selected-work_tag">A glowing skull and a floating keypad.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The only lit door.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The only lit door</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="1-door.png" alt="In VRChat, a dark path leading to a small lit arched doorway"></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">The only lit door</div>
+            <p class="selected-work_tag">The way in, under moonlight.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="Night shore at the cave mouth.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Night shore</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="3-shore.png" alt="In VRChat, moonlit water at a cave shore at night"></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">Night shore</div>
+            <p class="selected-work_tag">Moonlit water at the cave mouth.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The keypad, mid entry, in the VRChat desktop client.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The keypad</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="7-154324.png" alt="In VRChat, a floating keypad with asterisks and a red enter button, with the desktop interface visible"></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">The keypad</div>
+            <p class="selected-work_tag">Mid entry, in the desktop client.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="The hidden theater.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge The hidden theater</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="4-theater.png" alt="In VRChat, a hidden theater with a screen playing a horror film"></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">The hidden theater</div>
+            <p class="selected-work_tag">A horror film past the puzzle.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="In world, at night.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge In world, at night</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="9-172108.png" alt="In VRChat, a night scene from the world of Hollow"></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">In world, at night</div>
+            <p class="selected-work_tag">Deep in the world.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="Unity editor. The keypad script and scene wiring.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Unity editor, keypad script</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="5-editor-keypad.png" alt="Unity editor, the UdonSharp Keypad script open beside the keypad scene"></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">Unity editor</div>
+            <p class="selected-work_tag">The keypad script and scene wiring.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="Unity editor. SkullGrab with Object Sync in the Inspector.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Unity editor, SkullGrab</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="6-editor-skull.png" alt="Unity editor, a red skull selected with the SkullGrab Udon program and VRC Pickup and Object Sync in the Inspector"></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">Unity editor</div>
+            <p class="selected-work_tag">SkullGrab with Object Sync in the Inspector.</p>
+          </div>
+        </div>
+      </div>
+      <div class="selected-work_inner">
+        <div class="shot selected-work_item" tabindex="0" role="button" data-cap="Unity editor. A view from the project.">
+          <div class="selected-work_clickable">
+            <div class="clickable_wrap">
+              <button type="button" class="clickable_btn"><span class="clickable_text">Enlarge Unity editor, project view</span></button>
+            </div>
+          </div>
+          <div class="selected-work_card"><img src="8-160639.png" alt="Unity editor, a view from the Hollow project"></div>
+          <div class="selected-work_details">
+            <div class="selected-work_title">Unity editor</div>
+            <p class="selected-work_tag">A view from the project.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="build">
+    <div class="c-heading pad" data-split-heading><h2>The build</h2></div>
+    <dl class="specs pad">
+      <div class="spec" data-spec><dt>Engine</dt><dd>Unity 2022.3.22f1</dd></div>
+      <div class="spec" data-spec><dt>SDK</dt><dd>VRChat Creator SDK, Udon</dd></div>
+      <div class="spec" data-spec><dt>Scripting</dt><dd>UdonSharp, Keypad and SkullGrab</dd></div>
+      <div class="spec" data-spec><dt>Interactivity</dt><dd>VRC Pickup, VRC Object Sync, triggers</dd></div>
+      <div class="spec" data-spec><dt>Audio</dt><dd>Audio Sources for ambience and theater sound</dd></div>
+      <div class="spec" data-spec><dt>Role</dt><dd>Solo build, design, layout, lighting and scripting</dd></div>
+      <div class="spec" data-spec><dt>Platform</dt><dd>VRChat, PCVR and Desktop</dd></div>
+    </dl>
+  </section>
+
+  <section class="finale">
+    <div class="glow" aria-hidden="true"></div>
+    <h2 data-split-heading>The door is open</h2>
+    <a class="btn" href="https://vrchat.com/home/world/wrld_2db07f88-35c7-4e42-bcd3-53cb5c501638/info" target="_blank" rel="noopener">Enter Hollow on VRChat</a>
+  </section>
+
+</main>
+
+<footer>
+  <b>ERIC ALLEN</b>. HOLLOW, A VRCHAT WORLD. 2026<br>
+  UNITY 2022.3.22F1, UDONSHARP, VRC CREATOR SDK.<br>
+  THE VRCHAT CLIENT IS REQUIRED TO ENTER THE WORLD.
+</footer>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-x" id="lb-x" type="button">Close</button>
+  <img id="lb-img" src="" alt="">
+  <p id="lb-cap"></p>
+</div>
+
+<div class="code-screen" id="codeScreen" aria-hidden="true">
+  <p>Hollow Access Code: 1234</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script src="https://unpkg.com/lenis@1.3.17/dist/lenis.min.js"></script>
+<script>
+(function(){
+  var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var lenis = null;
+  var pre = document.getElementById('pre');
+
+  /* ---------- lightbox, vanilla shell with gsap polish ---------- */
+  var lb = document.getElementById('lb');
+  var lbImg = document.getElementById('lb-img');
+  var lbCap = document.getElementById('lb-cap');
+  var lastFocus = null;
+
+  function openLb(fig){
+    var img = fig.querySelector('.selected-work_card img, .eframe img');
+    lbImg.src = img.src;
+    lbImg.alt = img.alt;
+    lbCap.textContent = fig.getAttribute('data-cap') || '';
+    lastFocus = fig.querySelector('.clickable_btn') || fig;
+    lb.classList.add('on');
+    lb.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    if (lenis) lenis.stop();
+    if (window.gsap) {
+      gsap.fromTo(lb, { autoAlpha:0 }, { autoAlpha:1, duration:0.3 });
+      gsap.fromTo(lbImg, { scale:0.92 }, { scale:1, duration:0.45, ease:'power3.out' });
+    } else {
+      lb.style.opacity = 1;
+    }
+    document.getElementById('lb-x').focus();
+  }
+  function closeLb(){
+    function finish(){
+      lb.classList.remove('on');
+      lb.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+      if (lenis) lenis.start();
+      if (lastFocus) lastFocus.focus();
+    }
+    if (window.gsap) {
+      gsap.to(lb, { autoAlpha:0, duration:0.25, onComplete:finish });
+    } else {
+      lb.style.opacity = 0;
+      finish();
+    }
+  }
+  document.querySelectorAll('.shot').forEach(function(fig){
+    fig.addEventListener('click', function(e){
+      if (e.target.closest('button') && !e.target.closest('.clickable_btn')) return;
+      openLb(fig);
+    });
+    fig.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLb(fig); }
+    });
+  });
+  document.getElementById('lb-x').addEventListener('click', closeLb);
+  lb.addEventListener('click', function(e){ if (e.target === lb || e.target === lbImg) closeLb(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && lb.classList.contains('on')) closeLb(); });
+
+  /* ---------- access code screen, then continue to the link ---------- */
+  var codeScreen = document.getElementById('codeScreen');
+  var codeBusy = false;
+
+  document.querySelectorAll('a.enter, a.btn').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var href = a.getAttribute('href') || '';
+      if (href.indexOf('http') !== 0 || codeBusy) return;
+      e.preventDefault();
+      codeBusy = true;
+
+      function hideCode(){
+        if (window.gsap) {
+          gsap.to(codeScreen, { autoAlpha:0, duration:0.6, delay:0.4, onComplete:function(){ codeBusy = false; } });
+        } else {
+          codeScreen.style.opacity = 0;
+          codeScreen.style.visibility = 'hidden';
+          codeBusy = false;
+        }
+      }
+      function openLink(){
+        var w = window.open(href, '_blank');
+        if (w) { try { w.opener = null; } catch (err) {} }
+        else { location.href = href; }
+        hideCode();
+      }
+      if (window.gsap) {
+        gsap.fromTo(codeScreen, { autoAlpha:0 }, { autoAlpha:1, duration:0.6, ease:'power2.inOut' });
+        gsap.delayedCall(2.4, openLink);
+      } else {
+        codeScreen.style.visibility = 'visible';
+        codeScreen.style.opacity = 1;
+        setTimeout(openLink, 2400);
+      }
+    });
+  });
+
+  /* ---------- motion layer ---------- */
+  function killPre(){ if (pre && pre.parentNode) pre.parentNode.removeChild(pre); }
+
+  if (!window.gsap) { document.documentElement.classList.remove('js-intro'); killPre(); return; }
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+
+  var booted = false;
+  function boot(){
+    if (booted) return;
+    booted = true;
+
+    /* lenis smooth scroll, same library as the reference site */
+    if (window.Lenis && !reduced) {
+      lenis = new Lenis({ duration:1.15, smoothWheel:true });
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(function(time){ lenis.raf(time * 1000); });
+      gsap.ticker.lagSmoothing(0);
+    }
+
+    /* preloader then staged intro, header, hero, then slower video */
+    var heroTl = null;
+    var introTl = null;
+    if (!reduced) {
+      gsap.set('#nav, .sec, .finale, footer', { autoAlpha:0 });
+      gsap.set('#reel', { opacity:0 });
+
+      heroTl = gsap.timeline({ paused:true, defaults:{ ease:'power4.out' } });
+      if (window.SplitText) {
+        var st = new SplitText('#statement', { type:'lines', mask:'lines' });
+        heroTl.from(st.lines, { yPercent:110, duration:1.05, stagger:0.09 }, 0);
+      }
+      heroTl.from('[data-hero]', { y:26, autoAlpha:0, duration:0.9 }, 0.45);
+
+      introTl = gsap.timeline({ paused:true });
+      introTl.to('#nav', { autoAlpha:1, duration:0.8, ease:'power3.out' }, 0)
+             .to('#reel', { opacity:1, duration:1.8, ease:'power2.inOut' }, 0.55)
+             .call(function(){ if (heroTl) heroTl.play(); }, null, 1.9)
+             .to('.sec, .finale, footer', { autoAlpha:1, duration:0.8, ease:'power2.out' }, 2);
+    }
+
+    if (pre && !reduced) {
+      var preTl = gsap.timeline();
+      preTl.to('.pre-logo', { autoAlpha:1, duration:1.8, ease:'power2.inOut' })
+        .to({}, { duration:0.7 })
+        .to('.pre-logo', { autoAlpha:0, duration:1, ease:'power2.inOut', onComplete:killPre })
+        .to({}, { duration:0.5 })
+        .call(function(){
+          document.documentElement.classList.remove('js-intro');
+          gsap.set('#nav, .sec, .finale, footer', { autoAlpha:0 });
+          ScrollTrigger.refresh();
+          if (introTl) introTl.play();
+        });
+    } else {
+      killPre();
+    }
+
+    /* progress + nav */
+    gsap.to('#progress', {
+      scaleX:1, ease:'none',
+      scrollTrigger:{ trigger:'main', start:'top top', end:'bottom bottom', scrub:0.3 }
+    });
+    ScrollTrigger.create({
+      start:80,
+      onToggle:function(self){ document.getElementById('nav').classList.toggle('solid', self.isActive); }
+    });
+
+    if (reduced) return;
+
+    /* split headings */
+    if (window.SplitText) {
+      document.querySelectorAll('[data-split-heading]').forEach(function(el){
+        var h = el.querySelector('h2') || el;
+        var s = new SplitText(h, { type:'lines', mask:'lines' });
+        gsap.from(s.lines, {
+          yPercent:110, duration:0.95, stagger:0.1, ease:'power4.out',
+          scrollTrigger:{ trigger:el, start:'top 88%' }
+        });
+      });
+    }
+
+    /* build rows */
+    gsap.utils.toArray('[data-spec]').forEach(function(row){
+      gsap.from(row, {
+        x:-22, autoAlpha:0, duration:0.6, ease:'power2.out',
+        scrollTrigger:{ trigger:row, start:'top 92%' }
+      });
+    });
+
+    window.addEventListener('load', function(){ ScrollTrigger.refresh(); });
+  }
+
+  if (document.fonts && document.fonts.ready) {
+    Promise.race([document.fonts.ready, new Promise(function(r){ setTimeout(r, 1200); })]).then(boot, boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+
+</body>
+</html>
